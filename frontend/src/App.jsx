@@ -18,9 +18,9 @@ function App() {
     formData.append("job_description", jobDescription);
 
     const response = await axios.post(
-     "https://ai-resume-analyzer-backend-7o6y.onrender.com/analyze"
-      formData
-    );
+  "https://ai-resume-analyzer-backend-7o6y.onrender.com/analyze",
+  formData
+ );
 
     setResult(response.data);
   };
