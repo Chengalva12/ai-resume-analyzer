@@ -1,11 +1,12 @@
 import { useState } from "react";
-import axios from "axios";
 import "./App.css";
 
 function App() {
   const [resume, setResume] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const analyzeResume = async () => {
     if (!resume || !jobDescription) {
@@ -13,18 +14,34 @@ function App() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("resume", resume);
-    formData.append("job_description", jobDescription);
+    try {
+      setLoading(true);
+      setError("");
+      setResult(null);
 
-   const API_URL = "https://ai-resume-analyzer-backend-7o6y.onrender.com";
+      const formData = new FormData();
+      formData.append("resume", resume);
+      formData.append("job_description", jobDescription);
 
-const response = await axios.post(
-  `${API_URL}/analyze`,
-  formData
-);
+      const response = await fetch(
+        "https://ai-resume-analyzer-backend-7o6y.onrender.com/analyze",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-    setResult(response.data);
+      if (!response.ok) {
+        throw new Error("Failed to analyze resume");
+      }
+
+      const data = await response.json();
+      setResult(data);
+    } catch (err) {
+      setError("Something went wrong. Please try again after a few seconds.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,7 +80,11 @@ const response = await axios.post(
             onChange={(e) => setJobDescription(e.target.value)}
           />
 
-          <button onClick={analyzeResume}>🚀 Analyze Resume with AI</button>
+          <button onClick={analyzeResume} disabled={loading}>
+            {loading ? "Analyzing..." : "🚀 Analyze Resume with AI"}
+          </button>
+
+          {error && <p className="error">{error}</p>}
         </div>
 
         {result && (
@@ -103,7 +124,9 @@ const response = await axios.post(
         </p>
       </section>
 
-      <footer>© 2026 AI Resume Analyzer • Created by Naga Sharanya Chengalva</footer>
+      <footer>
+        © 2026 AI Resume Analyzer • Created by Naga Sharanya Chengalva
+      </footer>
     </div>
   );
 }
