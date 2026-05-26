@@ -17,10 +17,12 @@ function App() {
     formData.append("resume", resume);
     formData.append("job_description", jobDescription);
 
-    const response = await axios.post(
-  "https://ai-resume-analyzer-backend-7o6y.onrender.com/analyze",
+   const API_URL = "https://ai-resume-analyzer-backend-7o6y.onrender.com";
+
+const response = await axios.post(
+  `${API_URL}/analyze`,
   formData
- );
+);
 
     setResult(response.data);
   };
